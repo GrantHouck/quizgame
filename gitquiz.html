@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>!Quizard!</title>
+		<style type="text/css">
+			#form1
+			{
+				position: absolute;
+				top: 140px;
+				left: 400px;
+			}
+			#question-text
+			{
+				text-decoration: underline;
+				font-size: 20px;
+				font-weight: bold;
+			}
+			#controls
+			{
+				position: relative;
+				display: block;
+				left: -90px;
+			}
+			#next
+			{
+				width: 154px;
+				
+			}
+		</style>
+		<script type="text/javascript">
+			// List of Question objects
+			var allQuestions = [
+				{question:"What is 1 + 1?",choices:[10,"Eleventy",24,0,2],correctAnswer:4},
+				{question:"What is 11 + 11?", choices:[1111,22,111,101,2222,222],correctAnswer:1},
+				{question:"Who is George Washington?", choices:["Thomas Jefferson","Ben Franklin", "Abe", "George Washington"],correctAnswer:3},
+				{question:"What is a language?",choices:["Spanish","English","Spanglish","Japanese","Kawaii"],correctAnswer:4},
+				{question:"Riddle me this..?",choices:[1,2,3,"this","random","wrong"],correctAnswer:2}
+			];
+			
+			// Global vars
+			var questionsLeft = allQuestions.length;
+			var currentQuestion = 0;
+			var score = 0;
+			var userAnswers = [];
+			
+			// Dynamically Generate Radio Buttons
+			function gen_radioButtons (ans_options, radio_group_name) {
+				var radioButtons ="";
+				var answer_choices = ans_options[currentQuestion].choices;
+				for (var i = 0; i < answer_choices.length; i++)
+				{
+					radioButtons += '<input type="radio" name="' + radio_group_name + '" value="' + i +'">' + answer_choices[i] + '<br><br>';
+				}
+				return radioButtons;
+			}
+			
+			// When next button is clicked, check answer, update score, remove/add in question and
+			// answers.
+			function onclick_buttonNext() {
+			
+				// Make sure the user selected an answer
+				if (document.form1.rad_group1.value == "")
+				{
+					return;
+				}
+				
+				userAnswers[currentQuestion] = document.form1.rad_group1.value;
+				var chosenAnswer = document.form1.rad_group1.value;
+				
+				// check if out of questions
+				if (currentQuestion == allQuestions.length - 1)
+				{
+					// need to check if last answer was correct and if so update score
+					if (chosenAnswer == allQuestions[currentQuestion].correctAnswer)
+					{
+						score += 1;
+					}
+					
+					
+					//document.getElementById('question').innerHTML = "";
+					//document.getElementById('choices').innerHTML = "";
+					
+					// remove content out of the form and display final score
+					document.form1.innerHTML = "";
+					document.getElementById('final-score').innerHTML = "<h1>Your score is " + score +
+					" out of " + allQuestions.length + "</h1>";
+				}
+				
+				// Not out of questions. if correct increase score, move on to next question.
+				// then display the question and answer choices
+				else if (chosenAnswer == allQuestions[currentQuestion].correctAnswer)
+				{
+					score += 1;
+					currentQuestion += 1;
+					document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
+					document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+					if (userAnswers[currentQuestion])
+					{
+						document.form1.rad_group1.value = userAnswers[currentQuestion];
+					}
+				}
+				// Answer was incorrect so don't increase score but do everything else that was above
+				else
+				{
+					currentQuestion += 1;
+					document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
+					document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+					if (userAnswers[currentQuestion])
+					{
+						document.form1.rad_group1.value = userAnswers[currentQuestion];
+					}
+				}
+			}
+			
+			function onclick_buttonPrev() {
+				// make sure you don't go past the beginning of the array
+				if (userAnswers.length == 0 || currentQuestion == 0)
+				{
+					return;
+				}
+				// it is possible to go back so decrease the current question index,
+				// load the question and answer options, load the answer
+				else
+				{
+					currentQuestion -= 1;
+					score -= 1;
+					document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
+					document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+					document.form1.rad_group1.value = document.form1.rad_group1[userAnswers[currentQuestion]].value;
+				}
+			}
+			
+		</script>
+	</head>
+	<body>
+		
+		<div id="final-score"></div>
+		<form name="form1" id="form1">
+			<div id="question"></div>
+			<div id="choices"></div>
+			<div id="controls">
+			<input name="prev" type="button" value="<--- Previous Question" id="prev">
+			<input name="next" type="button" value="Next Question ---->" id="next">
+			</div>
+			
+		</form>
+	
+	
+		<script type="text/javascript">
+			document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
+			document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+			document.getElementById('next').onclick = onclick_buttonNext;
+			document.getElementById('prev').onclick = onclick_buttonPrev;
+		</script>
+	
+	</body>
+</html>
