@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<questions>
+	<qoa>
+		<question>What is 1 + 1</question>
+		<choices>
+			<choice>10</choice>
+			<choice>Eleventy</choice>
+			<choice>24</choice>
+			<choice>0</choice>
+			<choice>2</choice>
+		</choices>
+		<correctAnswer>4</correctAnswer>
+	</qoa>
+	<qoa>
+		<question>What is 11 + 11</question>
+		<choices>
+			<choice>1111</choice>
+			<choice>22</choice>
+			<choice>111</choice>
+			<choice>101</choice>
+			<choice>2222</choice>
+			<choice>222</choice>
+		</choices>
+		<correctAnswer>1</correctAnswer>
+	</qoa>
+	<qoa>
+		<question>Who is George Washington?</question>
+		<choices>
+			<choice>Thomas Jefferson</choice>
+			<choice>Ben Franklin</choice>
+			<choice>Abe</choice>
+			<choice>George Washington</choice>
+		</choices>
+		<correctAnswer>3</correctAnswer>
+	</qoa>
+	<qoa>
+		<question>What is a language?</question>
+		<choices>
+			<choice>Spanish</choice>
+			<choice>English</choice>
+			<choice>Spanglish</choice>
+			<choice>Japanese</choice>
+			<choice>Kawaii</choice>
+		</choices>
+		<correctAnswer>4</correctAnswer>
+	</qoa>
+	<qoa>
+		<question>Riddle me this...?</question>
+		<choices>
+			<choice>1</choice>
+			<choice>2</choice>
+			<choice>3</choice>
+			<choice>this</choice>
+			<choice>random</choice>
+			<choice>wrong</choice>
+		</choices>
+		<correctAnswer>2</correctAnswer>
+	</qoa>
+</questions>
