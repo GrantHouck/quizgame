@@ -28,7 +28,13 @@
 			}
 		</style>
 		<script type="text/javascript">
+		//==================================================
+		
+		// THIS VERSION USES XML DOC FOR QUESTION STORAGE
+		
+		//==================================================
 			// List of Question objects
+			/*
 			var allQuestions = [
 				{question:"What is 1 + 1?",choices:[10,"Eleventy",24,0,2],correctAnswer:4},
 				{question:"What is 11 + 11?", choices:[1111,22,111,101,2222,222],correctAnswer:1},
@@ -36,20 +42,36 @@
 				{question:"What is a language?",choices:["Spanish","English","Spanglish","Japanese","Kawaii"],correctAnswer:4},
 				{question:"Riddle me this..?",choices:[1,2,3,"this","random","wrong"],correctAnswer:2}
 			];
+			*/
 			
 			// Global vars
-			var questionsLeft = allQuestions.length;
+			//var questionsLeft = allQuestions.length;
 			var currentQuestion = 0;
 			var score = 0;
 			var userAnswers = [];
 			
+			
+			
+			//==================
+			// XML Document vars
+			//==================
+			var xmlDoc = document.implementation.createDocument("","",null);
+			xmlDoc.async = false;
+			xmlDoc.load("question.xml");
+			
+			var qoas = xmlDoc.getElementsByTagName("qoa");
+			var questions = xmlDoc.getElementsByTagName("question");
+			var ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
+			
+			var questionsLeft = questions.length;
+			
 			// Dynamically Generate Radio Buttons
 			function gen_radioButtons (ans_options, radio_group_name) {
 				var radioButtons ="";
-				var answer_choices = ans_options[currentQuestion].choices;
-				for (var i = 0; i < answer_choices.length; i++)
+				//var answer_choices = ans_options[currentQuestion].choices;
+				for (var i = 0; i < ans_options.length; i++)
 				{
-					radioButtons += '<input type="radio" name="' + radio_group_name + '" value="' + i +'">' + answer_choices[i] + '<br><br>';
+					radioButtons += '<input type="radio" name="' + radio_group_name + '" value="' + i +'">' + ans_options[i].firstChild.nodeValue + '<br><br>';
 				}
 				return radioButtons;
 			}
@@ -65,15 +87,15 @@
 				}
 				
 				userAnswers[currentQuestion] = document.form1.rad_group1.value;
-				var chosenAnswer = document.form1.rad_group1.value;
+				chosenAnswer = document.form1.rad_group1.value;
 				
 				// check if out of questions
-				if (currentQuestion == allQuestions.length - 1)
+				if (currentQuestion == questions.length - 1)
 				{
 					// need to check if last answer was correct and if so update score
-					if (chosenAnswer == allQuestions[currentQuestion].correctAnswer)
+					if (chosenAnswer == qoas[currentQuestion].getElementsByTagName("correctAnswer")[0].firstChild.nodeValue)
 					{
-						score += 1;
+						//score += 1;
 					}
 					
 					
@@ -82,18 +104,26 @@
 					
 					// remove content out of the form and display final score
 					document.form1.innerHTML = "";
+					for (var i = 0; i < userAnswers.length; i++)
+					{
+						if (userAnswers[i] == qoas[i].getElementsByTagName("correctAnswer")[0].firstChild.nodeValue)
+						{
+							score += 1;
+						}
+					}
 					document.getElementById('final-score').innerHTML = "<h1>Your score is " + score +
-					" out of " + allQuestions.length + "</h1>";
+					" out of " + questions.length + "</h1>";
 				}
 				
 				// Not out of questions. if correct increase score, move on to next question.
 				// then display the question and answer choices
-				else if (chosenAnswer == allQuestions[currentQuestion].correctAnswer)
+				else if (chosenAnswer == qoas[currentQuestion].getElementsByTagName("correctAnswer")[0].firstChild.nodeValue) //used to be "allQuestions[currentQuestion].correctAnswer"
 				{
-					score += 1;
+					//score += 1;
 					currentQuestion += 1;
-					document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
-					document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+					ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
+					document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
+					document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
 					if (userAnswers[currentQuestion])
 					{
 						document.form1.rad_group1.value = userAnswers[currentQuestion];
@@ -103,8 +133,9 @@
 				else
 				{
 					currentQuestion += 1;
-					document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
-					document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+					var ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
+					document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
+					document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
 					if (userAnswers[currentQuestion])
 					{
 						document.form1.rad_group1.value = userAnswers[currentQuestion];
@@ -122,10 +153,15 @@
 				// load the question and answer options, load the answer
 				else
 				{
+					if (document.form1.rad_group1.value != "")
+					{
+						userAnswers[currentQuestion] = document.form1.rad_group1.value;
+					}
 					currentQuestion -= 1;
-					score -= 1;
-					document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
-					document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+					//score -= 1;
+					ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
+					document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
+					document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
 					document.form1.rad_group1.value = document.form1.rad_group1[userAnswers[currentQuestion]].value;
 				}
 			}
@@ -147,8 +183,8 @@
 	
 	
 		<script type="text/javascript">
-			document.getElementById('question').innerHTML = "<p id='question-text'>"+allQuestions[currentQuestion].question+"</p>";
-			document.getElementById('choices').innerHTML = gen_radioButtons(allQuestions, "rad_group1");
+			document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
+			document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
 			document.getElementById('next').onclick = onclick_buttonNext;
 			document.getElementById('prev').onclick = onclick_buttonPrev;
 		</script>
