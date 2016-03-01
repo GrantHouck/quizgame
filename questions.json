@@ -1,0 +1,7 @@
+[{"question":"What is 1 + 1?", "choices":[10,"Eleventy",24,0,2], "correctAnswer":4},
+ {"question":"What is 11 + 11?", "choices":[1111,22,111,101,2222,222], "correctAnswer":1},
+ {"question":"Who is George Washington?", "choices":["Thomas Jefferson", "Ben Franklin", "Abe", "George Washington"], "correctAnswer":3},
+ {"question":"What is a language?", "choices":["Spanish","English","Spanglish","Japanese","Kawaii"], "correctAnswer":4},
+ {"question":"Riddle me this..?", "choices":[1,2,3,"this","random","wrong"], "correctAnswer":2}
+]
+ 
