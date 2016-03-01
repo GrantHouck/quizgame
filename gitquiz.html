@@ -28,6 +28,7 @@
 			}
 		</style>
 		<script type="text/javascript" src="./cookiefunctions.js"></script>
+		<script type="text/javascript" src="./httprequest.js"></script>
 		<script type="text/javascript">
 			function loggedIn() {
 				
@@ -38,13 +39,19 @@
 					if (localStorage.getItem("quizardUser") && localStorage.getItem("quizardPassword"))
 					{
 						setCookie("quizardRecentVisitor",localStorage.getItem("quizardUser"),"","");
+						setCookie("quizardPassword",localStorage.getItem("quizardPassword"),"","");
 						alert("Welcome " + getCookie("quizardRecentVisitor"));
 					}
 					else
 					{
+						var userName = "";
+						var password = "";
 						alert("You need to be logged in to play dis game");
-						var userName = prompt("Enter a user name");
-						var password = prompt("Enter a password");
+						while ((userName == null || userName == "") || (password == null || password == ""))
+						{
+							userName = prompt("Enter a user name");
+							password = prompt("Enter a password");
+						}
 						localStorage.setItem("quizardUser", userName);
 						localStorage.setItem("quizardPassword", password);
 						setCookie("quizardRecentVisitor", userName, "", "");
@@ -80,9 +87,22 @@
 			var currentQuestion = 0;
 			var score = 0;
 			var userAnswers = [];
+			//var jsonQuestions = "";
+			//var realList = this.realQuestions;
+			var questionObjectList = new HttpRequest("questions.json", function(sResponseText) {
+				var questions = JSON.parse(sResponseText);
+				document.getElementById("question").innerHTML = "<p>" + questions[currentQuestion].question + "</p>";
+				document.getElementById("choices").innerHTML = gen_radioButtons(questions[currentQuestion].choices, "rad_group1");
+			});
+			questionObjectList.send();
+			
+			//console.log(jsonQuestions);
+			//jsonQuestionList = JSON.parse(jsonQuestions);
+			//console.log(jsonQuestionList);
 			
 			
 			
+			/*
 			//==================
 			// XML Document vars
 			//==================
@@ -95,21 +115,24 @@
 			var ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
 			
 			var questionsLeft = questions.length;
+			*/
 			
 			// Dynamically Generate Radio Buttons
 			function gen_radioButtons (ans_options, radio_group_name) {
-				var radioButtons ="";
+				var radioButtons = "";
 				//var answer_choices = ans_options[currentQuestion].choices;
 				for (var i = 0; i < ans_options.length; i++)
 				{
-					radioButtons += '<input type="radio" name="' + radio_group_name + '" value="' + i +'">' + ans_options[i].firstChild.nodeValue + '<br><br>';
+					radioButtons += '<input type="radio" name="' + radio_group_name + '" value="' + i +'">' + ans_options[i] + '<br><br>';
 				}
 				return radioButtons;
 			}
 			
 			// When next button is clicked, check answer, update score, remove/add in question and
 			// answers.
+			/*
 			function onclick_buttonNext() {
+			
 			
 				// Make sure the user selected an answer
 				if (document.form1.rad_group1.value == "")
@@ -173,7 +196,58 @@
 					}
 				}
 			}
+			*/
+			function cb_buttonNext() {
 			
+				if (document.form1.rad_group1.value == "")
+				{
+					return;
+				}
+				
+				var questionDiv = document.getElementById("question");
+				var choicesDiv = document.getElementById("choices");
+				
+				
+				var jsonObj = new HttpRequest("questions.json", function(sResponse) {
+					
+					jsonQuestions = JSON.parse(sResponse);
+					if (currentQuestion == jsonQuestions.length - 1)
+					{
+						userAnswers[currentQuestion] = document.form1.rad_group1.value;
+						// We are on the last question and
+						// need to go to the score screen and 
+						// tally the score and show the score
+						for (var i = 0; i < userAnswers.length; i++)
+						{
+							if (userAnswers[i] == jsonQuestions[i].correctAnswer)
+							{
+								score += 1;
+							}
+						}
+						document.form1.innerHTML = "<p>You scored " + score + " out of " + jsonQuestions.length +"</p>"; 
+						
+					}
+					else
+					{
+						// We are not on the last question
+						// Wee need to first save the users answer and then
+						// go to the next question by loading 1. the next question
+						// 2. the next set of choices
+						userAnswers[currentQuestion] = document.form1.rad_group1.value;
+						currentQuestion += 1;
+						questionDiv.innerHTML = "<p>" + jsonQuestions[currentQuestion].question + "</p>";
+						choicesDiv.innerHTML = gen_radioButtons(jsonQuestions[currentQuestion].choices, "rad_group1");
+						if (userAnswers[currentQuestion])
+						{
+							document.form1.rad_group1.value = userAnswers[currentQuestion];
+						}
+					}
+				});
+				jsonObj.send();
+			}
+				
+				
+			/*
 			function onclick_buttonPrev() {
 				// make sure you don't go past the beginning of the array
 				if (userAnswers.length == 0 || currentQuestion == 0)
@@ -196,6 +270,41 @@
 					document.form1.rad_group1.value = document.form1.rad_group1[userAnswers[currentQuestion]].value;
 				}
 			}
+			*/
+			
+			function cb_buttonPrev() {
+				
+				if (currentQuestion == 0)
+				{
+					return;
+				}
+				
+				var jsonObj = new HttpRequest("questions.json", function(sResponse) {
+					
+					var jsonQuestions = JSON.parse(sResponse);
+					
+					// save the current choice in userAnswers
+					// decrease currentQuestion by 1
+					// load the previous (now current) question
+					// load the previous (now current) set of choices
+					// load the users choice from userAnswers
+					
+					if (document.form1.rad_group1.value)
+					{
+						userAnswers[currentQuestion] = document.form1.rad_group1.value;
+					}
+					currentQuestion -= 1;
+					document.getElementById('question').innerHTML = "<p>" + jsonQuestions[currentQuestion].question + "</p>";
+					document.getElementById('choices').innerHTML = gen_radioButtons(jsonQuestions[currentQuestion].choices, "rad_group1");
+					document.form1.rad_group1.value = userAnswers[currentQuestion];
+					
+					
+					
+				});
+				jsonObj.send();
+			}
+					
+			
 			
 		</script>
 	</head>
@@ -215,10 +324,10 @@
 	
 		<script type="text/javascript">
 			
-			document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
-			document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
-			document.getElementById('next').onclick = onclick_buttonNext;
-			document.getElementById('prev').onclick = onclick_buttonPrev;
+			//document.getElementById('question').innerHTML = "<p id='question-text'>"+ jsonQuestions[currentQuestion].question +"</p>";
+			//document.getElementById('choices').innerHTML = gen_radioButtons(jsonQuestions[currentQuestion].choices, "rad_group1");
+			document.getElementById('next').onclick = cb_buttonNext;
+			document.getElementById('prev').onclick = cb_buttonPrev;
 			window.onload = loggedIn;
 		</script>
 	
