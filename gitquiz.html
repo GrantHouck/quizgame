@@ -27,7 +27,38 @@
 				
 			}
 		</style>
+		<script type="text/javascript" src="./cookiefunctions.js"></script>
 		<script type="text/javascript">
+			function loggedIn() {
+				
+				var userName = getCookie("quizardRecentVisitor")
+				if (!(userName != "null"))
+				{
+					
+					if (localStorage.getItem("quizardUser") && localStorage.getItem("quizardPassword"))
+					{
+						setCookie("quizardRecentVisitor",localStorage.getItem("quizardUser"),"","");
+						alert("Welcome " + getCookie("quizardRecentVisitor"));
+					}
+					else
+					{
+						alert("You need to be logged in to play dis game");
+						var userName = prompt("Enter a user name");
+						var password = prompt("Enter a password");
+						localStorage.setItem("quizardUser", userName);
+						localStorage.setItem("quizardPassword", password);
+						setCookie("quizardRecentVisitor", userName, "", "");
+						setCookie("quizardPassword", password, "", "");
+					}
+				}
+				else
+				{
+					alert("Welcome back " + getCookie("quizardRecentVisitor"));
+				}
+				
+				
+			}
+		
 		//==================================================
 		
 		// THIS VERSION USES XML DOC FOR QUESTION STORAGE
@@ -183,10 +214,12 @@
 	
 	
 		<script type="text/javascript">
+			
 			document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
 			document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
 			document.getElementById('next').onclick = onclick_buttonNext;
 			document.getElementById('prev').onclick = onclick_buttonPrev;
+			window.onload = loggedIn;
 		</script>
 	
 	</body>
