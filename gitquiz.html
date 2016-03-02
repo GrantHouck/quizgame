@@ -30,6 +30,12 @@
 		<script type="text/javascript" src="./cookiefunctions.js"></script>
 		<script type="text/javascript" src="./httprequest.js"></script>
 		<script type="text/javascript">
+		
+			/*  Via cookie, check if user has visited
+			 *  If there is no cookie check local storage and set a new cookie from there
+			 *  Else ask user for username and password and then set cookies and local storage
+			 *  If there is a cookie welcome the user back
+			 */
 			function loggedIn() {
 				
 				var userName = getCookie("quizardRecentVisitor")
@@ -66,29 +72,11 @@
 				
 			}
 		
-		//==================================================
 		
-		// THIS VERSION USES XML DOC FOR QUESTION STORAGE
-		
-		//==================================================
-			// List of Question objects
-			/*
-			var allQuestions = [
-				{question:"What is 1 + 1?",choices:[10,"Eleventy",24,0,2],correctAnswer:4},
-				{question:"What is 11 + 11?", choices:[1111,22,111,101,2222,222],correctAnswer:1},
-				{question:"Who is George Washington?", choices:["Thomas Jefferson","Ben Franklin", "Abe", "George Washington"],correctAnswer:3},
-				{question:"What is a language?",choices:["Spanish","English","Spanglish","Japanese","Kawaii"],correctAnswer:4},
-				{question:"Riddle me this..?",choices:[1,2,3,"this","random","wrong"],correctAnswer:2}
-			];
-			*/
-			
-			// Global vars
-			//var questionsLeft = allQuestions.length;
 			var currentQuestion = 0;
 			var score = 0;
 			var userAnswers = [];
-			//var jsonQuestions = "";
-			//var realList = this.realQuestions;
+			
 			var questionObjectList = new HttpRequest("questions.json", function(sResponseText) {
 				var questions = JSON.parse(sResponseText);
 				document.getElementById("question").innerHTML = "<p>" + questions[currentQuestion].question + "</p>";
@@ -96,26 +84,11 @@
 			});
 			questionObjectList.send();
 			
-			//console.log(jsonQuestions);
-			//jsonQuestionList = JSON.parse(jsonQuestions);
-			//console.log(jsonQuestionList);
 			
 			
 			
-			/*
-			//==================
-			// XML Document vars
-			//==================
-			var xmlDoc = document.implementation.createDocument("","",null);
-			xmlDoc.async = false;
-			xmlDoc.load("question.xml");
 			
-			var qoas = xmlDoc.getElementsByTagName("qoa");
-			var questions = xmlDoc.getElementsByTagName("question");
-			var ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
 			
-			var questionsLeft = questions.length;
-			*/
 			
 			// Dynamically Generate Radio Buttons
 			function gen_radioButtons (ans_options, radio_group_name) {
@@ -128,75 +101,7 @@
 				return radioButtons;
 			}
 			
-			// When next button is clicked, check answer, update score, remove/add in question and
-			// answers.
-			/*
-			function onclick_buttonNext() {
 			
-			
-				// Make sure the user selected an answer
-				if (document.form1.rad_group1.value == "")
-				{
-					return;
-				}
-				
-				userAnswers[currentQuestion] = document.form1.rad_group1.value;
-				chosenAnswer = document.form1.rad_group1.value;
-				
-				// check if out of questions
-				if (currentQuestion == questions.length - 1)
-				{
-					// need to check if last answer was correct and if so update score
-					if (chosenAnswer == qoas[currentQuestion].getElementsByTagName("correctAnswer")[0].firstChild.nodeValue)
-					{
-						//score += 1;
-					}
-					
-					
-					//document.getElementById('question').innerHTML = "";
-					//document.getElementById('choices').innerHTML = "";
-					
-					// remove content out of the form and display final score
-					document.form1.innerHTML = "";
-					for (var i = 0; i < userAnswers.length; i++)
-					{
-						if (userAnswers[i] == qoas[i].getElementsByTagName("correctAnswer")[0].firstChild.nodeValue)
-						{
-							score += 1;
-						}
-					}
-					document.getElementById('final-score').innerHTML = "<h1>Your score is " + score +
-					" out of " + questions.length + "</h1>";
-				}
-				
-				// Not out of questions. if correct increase score, move on to next question.
-				// then display the question and answer choices
-				else if (chosenAnswer == qoas[currentQuestion].getElementsByTagName("correctAnswer")[0].firstChild.nodeValue) //used to be "allQuestions[currentQuestion].correctAnswer"
-				{
-					//score += 1;
-					currentQuestion += 1;
-					ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
-					document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
-					document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
-					if (userAnswers[currentQuestion])
-					{
-						document.form1.rad_group1.value = userAnswers[currentQuestion];
-					}
-				}
-				// Answer was incorrect so don't increase score but do everything else that was above
-				else
-				{
-					currentQuestion += 1;
-					var ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
-					document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
-					document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
-					if (userAnswers[currentQuestion])
-					{
-						document.form1.rad_group1.value = userAnswers[currentQuestion];
-					}
-				}
-			}
-			*/
 			function cb_buttonNext() {
 			
 				if (document.form1.rad_group1.value == "")
@@ -247,30 +152,7 @@
 			}
 				
 				
-			/*
-			function onclick_buttonPrev() {
-				// make sure you don't go past the beginning of the array
-				if (userAnswers.length == 0 || currentQuestion == 0)
-				{
-					return;
-				}
-				// it is possible to go back so decrease the current question index,
-				// load the question and answer options, load the answer
-				else
-				{
-					if (document.form1.rad_group1.value != "")
-					{
-						userAnswers[currentQuestion] = document.form1.rad_group1.value;
-					}
-					currentQuestion -= 1;
-					//score -= 1;
-					ansChoices = qoas[currentQuestion].getElementsByTagName("choice");
-					document.getElementById('question').innerHTML = "<p id='question-text'>"+questions[currentQuestion].firstChild.nodeValue+"</p>";
-					document.getElementById('choices').innerHTML = gen_radioButtons(ansChoices, "rad_group1");
-					document.form1.rad_group1.value = document.form1.rad_group1[userAnswers[currentQuestion]].value;
-				}
-			}
-			*/
+			
 			
 			function cb_buttonPrev() {
 				
@@ -324,8 +206,7 @@
 	
 		<script type="text/javascript">
 			
-			//document.getElementById('question').innerHTML = "<p id='question-text'>"+ jsonQuestions[currentQuestion].question +"</p>";
-			//document.getElementById('choices').innerHTML = gen_radioButtons(jsonQuestions[currentQuestion].choices, "rad_group1");
+			
 			document.getElementById('next').onclick = cb_buttonNext;
 			document.getElementById('prev').onclick = cb_buttonPrev;
 			window.onload = loggedIn;
