@@ -5,26 +5,36 @@
 		<style type="text/css">
 			#form1
 			{
-				position: absolute;
+				
+				position: relative;
+				width: 314px;
+				margin: auto;
 				top: 140px;
-				left: 400px;
+				
+				
 			}
-			#question-text
+			#question
 			{
 				text-decoration: underline;
 				font-size: 20px;
 				font-weight: bold;
+				text-align: center;
 			}
 			#controls
 			{
 				position: relative;
 				display: block;
-				left: -90px;
+				
+				
 			}
 			#next
 			{
 				width: 154px;
 				
+			}
+			#choices {
+				position: relative;
+				left: 140px;
 			}
 		</style>
 		<script type="text/javascript" src="./cookiefunctions.js"></script>
@@ -97,7 +107,7 @@
 
 				for (var i = 0; i < ans_options.length; i++)
 				{
-					radioButtons += '<input type="radio" name="' + radio_group_name + '" value="' + i +'">' + ans_options[i] + '<br><br>';
+					radioButtons += '<input id="rad_group1" type="radio" name="' + radio_group_name + '" value="' + i +'">' + ans_options[i] + '<br><br>';
 				}
 				return radioButtons;
 			}
@@ -187,7 +197,9 @@
 		<div id="final-score"></div>
 		<form name="form1" id="form1">
 			<div id="question"></div>
-			<div id="choices"></div>
+			<div id="wrap">
+				<div id="choices"></div>
+			</div>
 			<div id="controls">
 			<input name="prev" type="button" value="<--- Previous Question" id="prev">
 			<input name="next" type="button" value="Next Question ---->" id="next">
